@@ -1,0 +1,1 @@
+{"author":"MultiEcom","description":"Flat-rate shipping method. Fixed shipping cost per order, configurable from the admin panel.","name":"ShippingFlat","provider":"Plugins\\ShippingFlat\\ShippingFlatServiceProvider","version":"1.0.0"}

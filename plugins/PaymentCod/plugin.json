@@ -1,0 +1,1 @@
+{"author":"MultiEcom","description":"Cash on Delivery payment method. Adds a COD option to checkout.","name":"PaymentCod","provider":"Plugins\\PaymentCod\\PaymentCodServiceProvider","version":"1.0.0"}
