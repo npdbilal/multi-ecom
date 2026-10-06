@@ -45,6 +45,25 @@ if (! function_exists('setting')) {
     }
 }
 
+if (! function_exists('media_url')) {
+    /**
+     * Public URL for a file stored on the "public" disk (e.g. media library,
+     * product gallery, banners). Pass-through for absolute URLs.
+     */
+    function media_url(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '/')) {
+            return $path;
+        }
+
+        return asset('storage/'.ltrim($path, '/'));
+    }
+}
+
 if (! function_exists('active_theme')) {
     /**
      * Get the active theme manifest array.

@@ -50,4 +50,30 @@ class User extends Authenticatable
     {
         return $this->hasMany(Cart::class);
     }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class)->orderByDesc('is_default');
+    }
+
+    public function defaultAddress(): ?Address
+    {
+        return $this->addresses()->where('is_default', true)->first()
+            ?? $this->addresses()->first();
+    }
+
+    public function wishlistItems()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function hasInWishlist(int $productId): bool
+    {
+        return $this->wishlistItems()->where('product_id', $productId)->exists();
+    }
 }

@@ -13,6 +13,7 @@ class Cart extends Model
         'session_id',
         'user_id',
         'product_id',
+        'product_variant_id',
         'quantity',
     ];
 
@@ -21,13 +22,23 @@ class Cart extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    public function unitPrice(): float
+    {
+        return $this->variant ? $this->variant->effectivePrice() : (float) $this->product->price;
+    }
+
     public function lineTotal(): float
     {
-        return (float) $this->product->price * $this->quantity;
+        return $this->unitPrice() * $this->quantity;
     }
 }

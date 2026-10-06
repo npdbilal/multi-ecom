@@ -27,7 +27,9 @@ class Order extends Model
         'payment_method',
         'subtotal',
         'shipping_cost',
+        'tax',
         'discount',
+        'coupon_code',
         'total',
         'currency',
         'customer_name',
@@ -43,6 +45,7 @@ class Order extends Model
         return [
             'subtotal' => 'decimal:2',
             'shipping_cost' => 'decimal:2',
+            'tax' => 'decimal:2',
             'discount' => 'decimal:2',
             'total' => 'decimal:2',
             'shipping_address' => 'array',
