@@ -134,13 +134,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('/media/{file}', [AdminMediaController::class, 'destroy'])->name('media.destroy')->where('file', '.*');
     Route::post('/media/attach', [AdminMediaController::class, 'attach'])->name('media.attach');
 
-    // Theme & plugin management
+    // Theme & plugin management (incl. ZIP upload installer)
     Route::get('/themes', [ThemeController::class, 'index'])->name('themes.index');
+    Route::post('/themes/upload', [ThemeController::class, 'upload'])->name('themes.upload');
     Route::post('/themes/activate/{theme}', [ThemeController::class, 'activate'])->name('themes.activate');
+    Route::delete('/themes/{theme}', [ThemeController::class, 'destroy'])->name('themes.destroy');
 
     Route::get('/plugins', [PluginController::class, 'index'])->name('plugins.index');
+    Route::post('/plugins/upload', [PluginController::class, 'upload'])->name('plugins.upload');
     Route::post('/plugins/{plugin}/enable', [PluginController::class, 'enable'])->name('plugins.enable');
     Route::post('/plugins/{plugin}/disable', [PluginController::class, 'disable'])->name('plugins.disable');
+    Route::delete('/plugins/{plugin}', [PluginController::class, 'destroy'])->name('plugins.destroy');
 
     // Language & translation management
     Route::resource('languages', AdminLanguageController::class)->except(['show']);
