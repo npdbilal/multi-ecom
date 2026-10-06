@@ -16,6 +16,11 @@
             <a href="{{ route('admin.products.index') }}" class="block px-3 py-2 rounded hover:bg-gray-800">📦 {{ trans_db('admin.products') }}</a>
             <a href="{{ route('admin.categories.index') }}" class="block px-3 py-2 rounded hover:bg-gray-800">🗂️ {{ trans_db('admin.categories') }}</a>
             <a href="{{ route('admin.orders.index') }}" class="block px-3 py-2 rounded hover:bg-gray-800">🧾 {{ trans_db('admin.orders') }}</a>
+            <a href="{{ route('admin.coupons.index') }}" class="block px-3 py-2 rounded hover:bg-gray-800">🎟️ {{ trans_db('admin.coupons') }}</a>
+            <a href="{{ route('admin.reviews.index') }}" class="block px-3 py-2 rounded hover:bg-gray-800">⭐ {{ trans_db('admin.reviews') }}</a>
+            <a href="{{ route('admin.pages.index') }}" class="block px-3 py-2 rounded hover:bg-gray-800">📄 {{ trans_db('admin.pages') }}</a>
+            <a href="{{ route('admin.banners.index') }}" class="block px-3 py-2 rounded hover:bg-gray-800">🖼️ {{ trans_db('admin.banners') }}</a>
+            <a href="{{ route('admin.media.index') }}" class="block px-3 py-2 rounded hover:bg-gray-800">🗃️ {{ trans_db('admin.media') }}</a>
             @if(plugin_enabled('MultiVendor'))
                 <a href="{{ route('admin.vendors.index') }}" class="block px-3 py-2 rounded hover:bg-gray-800">🏪 Vendors</a>
             @endif
