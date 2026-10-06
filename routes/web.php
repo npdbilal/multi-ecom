@@ -1,11 +1,17 @@
 <?php
 
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Admin\BannerController as AdminBannerController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LanguageController as AdminLanguageController;
+use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PluginController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\ThemeController;
 use App\Http\Controllers\Admin\TranslationController;
 use App\Http\Controllers\CartController;
@@ -14,7 +20,10 @@ use App\Http\Controllers\FirebaseAuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -69,7 +78,33 @@ Route::post('/logout', [FirebaseAuthController::class, 'logout'])->middleware('a
 Route::middleware('auth')->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+
+    // Wishlist
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::delete('/wishlist/{product}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
+
+    // Product reviews
+    Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+    // Customer dashboard & address book
+    Route::get('/account', [AccountController::class, 'dashboard'])->name('account.dashboard');
+    Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
+    Route::get('/account/profile', [AccountController::class, 'editProfile'])->name('account.profile.edit');
+    Route::put('/account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
+    Route::get('/account/addresses', [AccountController::class, 'addresses'])->name('account.addresses');
+    Route::post('/account/addresses', [AccountController::class, 'storeAddress'])->name('account.addresses.store');
+    Route::put('/account/addresses/{address}', [AccountController::class, 'updateAddress'])->name('account.addresses.update');
+    Route::delete('/account/addresses/{address}', [AccountController::class, 'destroyAddress'])->name('account.addresses.destroy');
+    Route::post('/account/addresses/{address}/default', [AccountController::class, 'setDefaultAddress'])->name('account.addresses.default');
 });
+
+// Coupon apply/remove (guests can use coupons too)
+Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon.apply');
+Route::delete('/cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
+
+// CMS pages (kept after all other routes to avoid slug conflicts)
+Route::get('/pages/{page:slug}', [PageController::class, 'show'])->name('pages.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +118,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('products', AdminProductController::class)->except(['show']);
     Route::resource('categories', AdminCategoryController::class)->except(['show']);
     Route::resource('orders', AdminOrderController::class)->only(['index', 'show', 'update']);
+
+    // Catalog extras
+    Route::resource('coupons', AdminCouponController::class)->except(['show']);
+    Route::resource('pages', AdminPageController::class)->except(['show']);
+    Route::resource('banners', AdminBannerController::class)->except(['show']);
+
+    Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
+    Route::post('/reviews/{review}/approve', [AdminReviewController::class, 'approve'])->name('reviews.approve');
+    Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+
+    // Media library
+    Route::get('/media', [AdminMediaController::class, 'index'])->name('media.index');
+    Route::post('/media', [AdminMediaController::class, 'store'])->name('media.store');
+    Route::delete('/media/{file}', [AdminMediaController::class, 'destroy'])->name('media.destroy')->where('file', '.*');
+    Route::post('/media/attach', [AdminMediaController::class, 'attach'])->name('media.attach');
 
     // Theme & plugin management
     Route::get('/themes', [ThemeController::class, 'index'])->name('themes.index');

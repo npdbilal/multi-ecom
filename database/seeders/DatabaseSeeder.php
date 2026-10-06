@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             LanguageSeeder::class,
             CategorySeeder::class,
             ProductSeeder::class,
+            CmsSeeder::class,
         ]);
     }
 }

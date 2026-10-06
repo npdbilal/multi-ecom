@@ -21,7 +21,9 @@ class DashboardController extends Controller
         ];
 
         $recentOrders = Order::latest()->take(8)->get();
-        $lowStock = Product::where('stock', '<', 10)->orderBy('stock')->take(8)->get();
+        // Low-stock alert threshold comes from settings (default 5).
+        $threshold = (int) setting('low_stock_threshold', 5);
+        $lowStock = Product::where('stock', '<=', $threshold)->orderBy('stock')->take(8)->get();
 
         return view('admin.dashboard', compact('stats', 'recentOrders', 'lowStock'));
     }

@@ -12,8 +12,12 @@ class ProductApiController extends Controller
     public function index(Request $request)
     {
         $products = Product::active()
-            ->with('category')
+            ->with('category', 'images', 'activeVariants')
             ->when($request->filled('category'), fn ($q) => $q->whereHas('category', fn ($qq) => $qq->where('slug', $request->category)))
+            ->when($request->filled('q'), function ($q) use ($request) {
+                $term = '%'.$request->q.'%';
+                $q->where(fn ($qq) => $qq->where('name', 'like', $term)->orWhere('description', 'like', $term));
+            })
             ->latest()
             ->paginate(15);
 
@@ -24,7 +28,7 @@ class ProductApiController extends Controller
     {
         abort_unless($product->is_active, 404);
 
-        return response()->json($product->load('category'));
+        return response()->json($product->load('category', 'images', 'activeVariants'));
     }
 
     public function languages()

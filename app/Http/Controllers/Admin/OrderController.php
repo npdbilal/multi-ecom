@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderStatusUpdated;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -29,7 +31,17 @@ class OrderController extends Controller
             'payment_status' => 'required|in:pending,paid,failed',
         ]);
 
+        $oldStatus = $order->status;
         $order->update($data);
+
+        // Notify the customer when the order status actually changed.
+        if ($data['status'] !== $oldStatus) {
+            try {
+                Mail::to($order->customer_email)->send(new OrderStatusUpdated($order, $oldStatus));
+            } catch (\Throwable) {
+                // SMTP not configured — status is still updated.
+            }
+        }
 
         return back()->with('success', trans_db('admin.saved'));
     }
