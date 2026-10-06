@@ -42,6 +42,41 @@ multi-ecom/
    use `trans_db('group.key')` with fallback: requested locale → default
    language → lang file → key itself. RTL flag per language.
 
+## Core features
+
+- **Product images** — multiple images per product (`product_images` table),
+  drag-free gallery manager on the product form, plus a standalone
+  **Media library** (Admin → Media): upload, copy URL, delete, attach to any
+  product. Files live in `storage/app/public/media` (`php artisan storage:link`).
+- **Product variants** — size/color style options with per-variant price
+  override and stock (`product_variants`). Variant picker on the product page
+  updates the price live; cart, orders and stock decrements are variant-aware.
+- **Inventory** — stock per product/variant, auto-decrement on order,
+  low-stock alert on the admin dashboard driven by the
+  `low_stock_threshold` setting.
+- **Discount coupons** — `%` or fixed codes with min. order value, usage
+  limits and date windows (`coupons`). Applied from the cart, validated by
+  `CouponService`, stored on the order.
+- **Reviews & ratings** — 1–5 stars + comment on the product page, average
+  rating on cards; admin approval toggle (`reviews_require_approval` setting),
+  moderation at Admin → Reviews.
+- **Wishlist** — heart buttons on cards/product page, `/wishlist` page
+  (login required).
+- **Search & filters** — name/description search, category, price range,
+  in-stock toggle, sort (newest, price ↑↓).
+- **Order emails** — `OrderConfirmation` on purchase and
+  `OrderStatusUpdated` when an admin changes status. Both are queued
+  (`ShouldQueue`) and use the SMTP settings. Wrapped in try/catch so a
+  missing mail config never breaks checkout.
+- **CMS pages** — admin-managed static pages with slug routing
+  (`/pages/{slug}`), linked automatically in the footer.
+- **Homepage banners** — admin-managed slider (image, link, sort order) on
+  the homepage.
+- **Tax** — `tax_rate` % and `tax_included` toggle settings, applied at
+  checkout and stored per order.
+- **Customer dashboard** — `/account`: order history, address book (multiple
+  addresses, default selection, one-click fill at checkout), profile edit.
+
 ## Requirements
 
 - PHP ^8.2
@@ -124,11 +159,18 @@ Add more languages any time from **Admin → Languages**.
 
 | Route | Description |
 |---|---|
-| `/` | Storefront home |
-| `/products`, `/products/{slug}` | Catalog |
-| `/cart`, `/checkout` | Cart & checkout |
+| `/` | Storefront home (banner slider) |
+| `/products`, `/products/{slug}` | Catalog with search, filters, sorting; product page with gallery, variants, reviews |
+| `/cart`, `/checkout` | Cart & checkout (coupons, tax, address book) |
+| `/wishlist` | Customer wishlist (login) |
+| `/account`, `/account/orders`, `/account/addresses`, `/account/profile` | Customer dashboard |
+| `/pages/{slug}` | CMS pages |
 | `/language/{code}` | Switch frontend language (session) |
-| `/admin` | Admin dashboard |
+| `/admin` | Admin dashboard (low-stock alerts) |
+| `/admin/products` | Products + gallery + variants |
+| `/admin/coupons` | Discount coupons |
+| `/admin/reviews` | Review moderation |
+| `/admin/pages`, `/admin/banners`, `/admin/media` | CMS pages, homepage banners, media library |
 | `/admin/languages`, `/admin/translations` | Language & translation manager |
 | `/admin/themes`, `/admin/plugins` | Theme switcher, plugin enable/disable |
 

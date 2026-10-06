@@ -3,6 +3,51 @@
 @section('title', config('app.name'))
 
 @section('content')
+    {{-- Banner slider (admin: Banners) --}}
+    @if($banners->count())
+        <section class="relative overflow-hidden bg-neutral-900 text-white">
+            <div id="banner-slider" class="relative">
+                @foreach($banners as $banner)
+                    <div class="banner-slide {{ $loop->first ? '' : 'hidden' }} relative">
+                        <img src="{{ $banner->imageUrl() }}" alt="{{ $banner->title }}" class="w-full h-[320px] md:h-[420px] object-cover opacity-70">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+                            <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-3">{{ $banner->title }}</h2>
+                            @if($banner->subtitle)
+                                <p class="text-neutral-200 mb-6 max-w-xl">{{ $banner->subtitle }}</p>
+                            @endif
+                            @if($banner->link)
+                                <a href="{{ $banner->link }}" class="bg-white text-neutral-900 px-8 py-3 rounded-full font-medium hover:bg-neutral-200 transition">
+                                    {{ trans_db('shop.shop_now') }}
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+                @if($banners->count() > 1)
+                    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+                        @foreach($banners as $i => $banner)
+                            <button type="button" onclick="showSlide({{ $i }})" class="banner-dot w-2.5 h-2.5 rounded-full {{ $i === 0 ? 'bg-white' : 'bg-white/40' }}"></button>
+                        @endforeach
+                    </div>
+                    <script>
+                        let slideIdx = 0;
+                        const slides = document.querySelectorAll('.banner-slide');
+                        const dots = document.querySelectorAll('.banner-dot');
+                        function showSlide(i) {
+                            slideIdx = (i + slides.length) % slides.length;
+                            slides.forEach((s, k) => s.classList.toggle('hidden', k !== slideIdx));
+                            dots.forEach((d, k) => {
+                                d.classList.toggle('bg-white', k === slideIdx);
+                                d.classList.toggle('bg-white/40', k !== slideIdx);
+                            });
+                        }
+                        setInterval(() => showSlide(slideIdx + 1), 6000);
+                    </script>
+                @endif
+            </div>
+        </section>
+    @endif
+
     {{-- Hero --}}
     <section class="relative bg-neutral-100 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 py-20 md:py-28 grid md:grid-cols-2 gap-10 items-center">

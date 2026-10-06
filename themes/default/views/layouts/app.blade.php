@@ -71,8 +71,11 @@
                 @endif
 
                 @auth
-                    <a href="{{ route('orders.index') }}" class="hover:opacity-60" title="{{ trans_db('shop.orders') }}">
+                    <a href="{{ route('account.dashboard') }}" class="hover:opacity-60" title="{{ trans_db('shop.my_account') }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    </a>
+                    <a href="{{ route('wishlist.index') }}" class="hover:opacity-60" title="{{ trans_db('shop.wishlist') }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                     </a>
                     <form action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
                 @else
@@ -128,10 +131,14 @@
                     <li><a href="{{ route('cart.index') }}" class="hover:text-neutral-900">{{ trans_db('shop.cart') }}</a></li>
                     <li><a href="{{ route('checkout.index') }}" class="hover:text-neutral-900">{{ trans_db('shop.checkout') }}</a></li>
                     @auth
-                        <li><a href="{{ route('orders.index') }}" class="hover:text-neutral-900">{{ trans_db('shop.orders') }}</a></li>
+                        <li><a href="{{ route('account.dashboard') }}" class="hover:text-neutral-900">{{ trans_db('shop.my_account') }}</a></li>
+                        <li><a href="{{ route('wishlist.index') }}" class="hover:text-neutral-900">{{ trans_db('shop.wishlist') }}</a></li>
                     @else
                         <li><a href="{{ route('login') }}" class="hover:text-neutral-900">{{ trans_db('shop.login') }}</a></li>
                     @endauth
+                    @foreach(\App\Models\Page::active()->orderBy('sort_order')->get() as $footerPage)
+                        <li><a href="{{ route('pages.show', $footerPage) }}" class="hover:text-neutral-900">{{ $footerPage->title }}</a></li>
+                    @endforeach
                 </ul>
             </div>
             <div>

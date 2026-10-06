@@ -12,15 +12,19 @@
                 @foreach($items as $item)
                     <div class="py-6 flex gap-5">
                         <a href="{{ route('products.show', $item->product) }}" class="w-24 h-28 rounded-xl bg-neutral-100 overflow-hidden flex-shrink-0">
-                            @if($item->product->image)
-                                <img src="{{ $item->product->image }}" class="w-full h-full object-cover">
+                            @php $thumb = $item->product->displayImage(); @endphp
+                            @if($thumb)
+                                <img src="{{ $thumb }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-3xl text-neutral-300">📦</div>
                             @endif
                         </a>
                         <div class="flex-1">
                             <a href="{{ route('products.show', $item->product) }}" class="font-medium hover:underline">{{ $item->product->name }}</a>
-                            <div class="text-sm text-neutral-500 mt-1">${{ number_format($item->product->price, 2) }}</div>
+                            @if($item->variant)
+                                <div class="text-xs text-neutral-500 mt-0.5">{{ $item->variant->name }}</div>
+                            @endif
+                            <div class="text-sm text-neutral-500 mt-1">${{ number_format($item->unitPrice(), 2) }}</div>
                             <div class="flex items-center gap-4 mt-3">
                                 <form action="{{ route('cart.update', $item->id) }}" method="POST" class="flex items-center border border-neutral-300 rounded-full">
                                     @csrf @method('PATCH')
@@ -40,11 +44,35 @@
 
             <div>
                 <div class="border border-neutral-200 rounded-2xl p-6 sticky top-24">
+                    {{-- Coupon --}}
+                    @if($coupon['coupon'])
+                        <div class="flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-4 py-3 mb-4 text-sm">
+                            <span class="font-mono font-semibold text-green-800">{{ $coupon['coupon']->code }}</span>
+                            <span class="text-green-700">−${{ number_format($coupon['discount'], 2) }}</span>
+                            <form action="{{ route('cart.coupon.remove') }}" method="POST">@csrf @method('DELETE')
+                                <button class="text-green-700 hover:text-red-600 ml-2">✕</button>
+                            </form>
+                        </div>
+                    @else
+                        <form action="{{ route('cart.coupon.apply') }}" method="POST" class="flex gap-2 mb-4">
+                            @csrf
+                            <input type="text" name="code" placeholder="{{ trans_db('shop.enter_coupon') }}" required
+                                   class="flex-1 border border-neutral-300 rounded-xl px-4 py-2.5 text-sm uppercase outline-none focus:border-neutral-900">
+                            <button class="bg-neutral-900 text-white rounded-xl px-5 text-sm font-medium hover:bg-neutral-700">{{ trans_db('shop.apply_coupon') }}</button>
+                        </form>
+                    @endif
+
                     <div class="flex justify-between text-sm mb-2">
                         <span class="text-neutral-500">{{ trans_db('shop.subtotal') }}</span>
                         <span class="font-semibold">${{ number_format($subtotal, 2) }}</span>
                     </div>
-                    <p class="text-xs text-neutral-400 mb-4">{{ trans_db('shop.shipping') }} + taxes calculated at checkout</p>
+                    @if($coupon['discount'] > 0)
+                        <div class="flex justify-between text-sm mb-2 text-green-700">
+                            <span>{{ trans_db('shop.discount') }}</span>
+                            <span>−${{ number_format($coupon['discount'], 2) }}</span>
+                        </div>
+                    @endif
+                    <p class="text-xs text-neutral-400 mb-4">{{ trans_db('shop.shipping') }} + {{ trans_db('shop.tax') }} calculated at checkout</p>
                     <a href="{{ route('checkout.index') }}"
                        class="block text-center bg-neutral-900 text-white rounded-full py-3.5 font-medium hover:bg-neutral-700 transition">
                         {{ trans_db('shop.checkout') }}
