@@ -72,11 +72,46 @@ php artisan serve
 
 Open http://127.0.0.1:8000
 
+## Firebase Authentication setup
+
+Authentication is handled by **Firebase** (Phone OTP, Email+Password, Google
+Sign-In). The browser signs in via the Firebase JS SDK; the ID token is POSTed
+to `/auth/firebase/verify`, verified server-side with the Firebase Admin SDK,
+and a normal Laravel session is started (`Auth::login`).
+
+```bash
+# 1. Create a project at console.firebase.google.com
+# 2. Build → Authentication → Sign-in method → enable:
+#      Phone, Email/Password, Google
+# 3. Project Settings → Your apps → Web app → copy the config values
+# 4. Project Settings → Service accounts → Generate new private key
+#      → save as storage/firebase-service-account.json
+```
+
+```env
+FIREBASE_API_KEY=...
+FIREBASE_AUTH_DOMAIN=....firebaseapp.com
+FIREBASE_PROJECT_ID=...
+FIREBASE_STORAGE_BUCKET=....appspot.com
+FIREBASE_MESSAGING_SENDER_ID=...
+FIREBASE_APP_ID=...
+FIREBASE_CREDENTIALS=/absolute/path/to/storage/firebase-service-account.json
+```
+
+> For Phone OTP testing, add your number under Authentication → Sign-in
+> method → Phone → Phone numbers for testing.
+
 ### Default seeded accounts
 
 | Role  | Email             | Password   |
 |-------|-------------------|------------|
 | Admin | admin@multiecom.test | password |
+
+> The admin account is seeded with a local password, but login goes through
+> Firebase. To claim it: in the Firebase Console create an Email/Password user
+> `admin@multiecom.test` — on first sign-in the account is linked by email and
+> the admin role is preserved. (`app/Http/Controllers/AuthController.php` is
+> the legacy Laravel-auth controller and is no longer wired to any route.)
 
 ### Seeded languages
 

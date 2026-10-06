@@ -42,6 +42,7 @@
   "prefer-stable": true,
   "require": {
     "laravel/framework": "^11.0",
+    "kreait/laravel-firebase": "^5.0",
     "laravel/tinker": "^2.9",
     "php": "^8.2"
   },

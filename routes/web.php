@@ -8,9 +8,9 @@ use App\Http\Controllers\Admin\PluginController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ThemeController;
 use App\Http\Controllers\Admin\TranslationController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\FirebaseAuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\OrderController;
@@ -49,13 +49,16 @@ Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])-
 */
 
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
+    // Firebase login page (Phone OTP / Email+Password / Google Sign-In).
+    Route::get('/login', [FirebaseAuthController::class, 'showLogin'])->name('login');
+    // Sign-up happens inside the Firebase login page (Email tab → Create Account).
+    Route::get('/register', fn () => redirect()->route('login', ['mode' => 'signup']))->name('register');
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+// Verifies the Firebase ID token from the JS SDK and starts a Laravel session.
+Route::post('/auth/firebase/verify', [FirebaseAuthController::class, 'verify'])->name('auth.firebase.verify');
+
+Route::post('/logout', [FirebaseAuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 /*
 |--------------------------------------------------------------------------

@@ -71,7 +71,7 @@ class CartController extends Controller
     }
 
     /**
-     * Merge guest cart into the user cart after login. Called by AuthController.
+     * Merge guest cart into the user cart after login. Called by FirebaseAuthController.
      */
     public static function mergeGuestCart(int $userId): void
     {
