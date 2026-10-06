@@ -1,0 +1,71 @@
+{
+  "autoload": {
+    "files": [
+      "app/helpers.php"
+    ],
+    "psr-4": {
+      "App\\": "app/",
+      "Database\\Factories\\": "database/factories/",
+      "Database\\Seeders\\": "database/seeders/",
+      "Plugins\\": "plugins/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true,
+      "phpstan/extension-installer": true
+    },
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "description": "Modular multi-vendor e-commerce platform built with Laravel",
+  "extra": {
+    "laravel": {
+      "dont-discover": []
+    }
+  },
+  "keywords": [
+    "laravel",
+    "ecommerce",
+    "multi-vendor",
+    "modular"
+  ],
+  "license": "MIT",
+  "minimum-stability": "stable",
+  "name": "multiecom/multi-ecom",
+  "prefer-stable": true,
+  "require": {
+    "laravel/framework": "^11.0",
+    "laravel/tinker": "^2.9",
+    "php": "^8.2"
+  },
+  "require-dev": {
+    "fakerphp/faker": "^1.23",
+    "laravel/pint": "^1.0",
+    "phpunit/phpunit": "^11.0"
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+      "@php artisan package:discover --ansi"
+    ],
+    "post-create-project-cmd": [
+      "@php artisan key:generate --ansi",
+      "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+      "@php artisan migrate --graceful --ansi"
+    ],
+    "post-root-package-install": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    ],
+    "post-update-cmd": [
+      "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+    ]
+  },
+  "type": "project"
+}
